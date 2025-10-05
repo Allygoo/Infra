@@ -1,0 +1,29 @@
+# =============================================================================
+# TERRAFORM VARIABLES - EXAMPLE FOR CLOUD RUN
+# Copy this file to terraform.tfvars and fill in your values
+# =============================================================================
+
+# REQUIRED - Your GCP Project ID
+project_id = "allygo"
+
+# OPTIONAL - Defaults to us-east1
+region = "us-east1"
+
+# OPTIONAL - API Gateway name
+api_gateway_name = "allygo-api-gateway"
+
+# REQUIRED - Cloud Run service URLs
+# Format: https://<service-name>-<hash>-<region>.a.run.app
+# Get these URLs after deploying your Cloud Run services:
+# gcloud run services list --platform managed --region us-east1
+
+services_management_service_url = "https://services-management-ms-xxxxx-ue.a.run.app"
+payments_service_url = "https://payments-ms-xxxxx-ue.a.run.app"
+
+# Optional - Other microservices (uncomment when ready)
+# users_service_url    = "https://users-ms-xxxxx-ue.a.run.app"
+# orders_service_url   = "https://orders-ms-xxxxx-ue.a.run.app"
+
+# CORS Configuration
+enable_cors     = true
+allowed_origins = ["*"]  # Change to your frontend domain in production

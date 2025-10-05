@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allygo API Gateway - Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .topbar {
+            display: none;
+        }
+        
+        .swagger-ui .info {
+            margin: 50px 0;
+        }
+        
+        .swagger-ui .info .title {
+            font-size: 36px;
+            color: #3b4151;
+        }
+        
+        .custom-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .custom-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .custom-header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .info-section {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+        
+        .info-section h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .info-card h4 {
+            margin-top: 0;
+            color: #3b4151;
+        }
+        
+        .info-card code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .microservices-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .microservices-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .microservices-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .badge-active {
+            background: #49cc90;
+            color: white;
+        }
+        
+        .badge-optional {
+            background: #ffc107;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Header -->
+    <div class="custom-header">
+        <h1>🚀 Allygo API Gateway</h1>
+        <p>Unified API Gateway for Allygo Cloud Run Microservices</p>
+    </div>
+
+    <!-- Information Section -->
+    <div class="info-section">
+        <h3>📋 API Gateway Information</h3>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>🌐 Gateway URL</h4>
+                <p><code>https://allygo-api-gateway-xxxxx.ue.gateway.dev</code></p>
+                <p><small>Replace with your actual gateway URL after deployment</small></p>
+            </div>
+            
+            <div class="info-card">
+                <h4>🔐 Authentication</h4>
+                <p>JWT-based authentication via Google Cloud service accounts</p>
+                <p><small>All Cloud Run backends require JWT audience validation</small></p>
+            </div>
+            
+            <div class="info-card">
+                <h4>🌍 Region</h4>
+                <p><code>us-east1</code></p>
+                <p><small>Google Cloud Platform region</small></p>
+            </div>
+        </div>
+
+        <div class="info-card" style="margin-top: 20px;">
+            <h4>🔧 Active Microservices</h4>
+            <ul class="microservices-list">
+                <li>
+                    <strong>Services Management</strong> 
+                    <span class="badge badge-active">ACTIVE</span>
+                    <br><small>14 endpoints - Order management, services, workers, categories</small>
+                </li>
+                <li>
+                    <strong>Payments</strong> 
+                    <span class="badge badge-active">ACTIVE</span>
+                    <br><small>5 endpoints - Payment processing and management</small>
+                </li>
+                <li>
+                    <strong>Users</strong> 
+                    <span class="badge badge-optional">OPTIONAL</span>
+                    <br><small>User authentication and management</small>
+                </li>
+                <li>
+                    <strong>Orders</strong> 
+                    <span class="badge badge-optional">OPTIONAL</span>
+                    <br><small>Order tracking and management</small>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Swagger UI Container -->
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            // Fetch the OpenAPI spec
+            fetch('openapi.yaml')
+                .then(response => response.text())
+                .then(yamlText => {
+                    // Initialize Swagger UI
+                    const ui = SwaggerUIBundle({
+                        spec: jsyaml.load(yamlText),
+                        dom_id: '#swagger-ui',
+                        deepLinking: true,
+                        presets: [
+                            SwaggerUIBundle.presets.apis,
+                            SwaggerUIStandalonePreset
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: "StandaloneLayout",
+                        defaultModelsExpandDepth: 1,
+                        defaultModelExpandDepth: 1,
+                        docExpansion: "list",
+                        filter: true,
+                        showExtensions: true,
+                        showCommonExtensions: true,
+                        syntaxHighlight: {
+                            activate: true,
+                            theme: "monokai"
+                        }
+                    });
+
+                    window.ui = ui;
+                })
+                .catch(error => {
+                    console.error('Error loading OpenAPI spec:', error);
+                    document.getElementById('swagger-ui').innerHTML = 
+                        '<div style="padding: 50px; text-align: center;">' +
+                        '<h2 style="color: #e74c3c;">❌ Error loading API specification</h2>' +
+                        '<p>Please make sure openapi.yaml is in the same directory.</p>' +
+                        '<p><small>Error: ' + error.message + '</small></p>' +
+                        '</div>';
+                });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# =============================================================================
+# TERRAFORM VARIABLES - EXAMPLE
+# Copy this file to terraform.tfvars and fill in your values
+# =============================================================================
+
+# REQUIRED - Your GCP Project ID
+project_id = "allygo"
+
+# OPTIONAL - Defaults to us-central1
+region = "us-central1"
+
+# OPTIONAL - GKE cluster name
+gke_name = "allygo-cluster"
+
+# OPTIONAL - Artifact Registry repository name
+artifact_repo = "microservices-repo-allygo"
+
+# OPTIONAL - Domain for Kubernetes Ingress
+api_gateway_domain = "api.allygo.com"

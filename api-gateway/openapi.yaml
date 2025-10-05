@@ -1,0 +1,407 @@
+# =============================================================================
+# API GATEWAY - OPENAPI SPECIFICATION FOR CLOUD RUN
+# =============================================================================
+# This file defines the API routes and backend integrations for GCP API Gateway
+# Optimized for Cloud Run services with proper authentication
+
+swagger: '2.0'
+info:
+  title: Allygo Microservices API Gateway
+  description: Unified API Gateway for Allygo Cloud Run microservices
+  version: 1.0.0
+
+host: gateway.${project_id}.cloud.goog
+schemes:
+  - https
+
+# =============================================================================
+# SECURITY DEFINITIONS (Optional - uncomment to enable API Key auth)
+# =============================================================================
+# securityDefinitions:
+#   api_key:
+#     type: "apiKey"
+#     name: "x-api-key"
+#     in: "header"
+# security:
+#   - api_key: []
+
+# =============================================================================
+# PATHS - API ENDPOINTS
+# =============================================================================
+paths:
+  # ===========================================================================
+  # SERVICES MANAGEMENT MICROSERVICE (CLOUD RUN)
+  # ===========================================================================
+  
+  # Health check
+  /health:
+    get:
+      summary: Health check for Services Management
+      operationId: servicesManagementHealth
+      x-google-backend:
+        address: ${services_management_url}/health
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Service is healthy
+
+  # Orders
+  /api/services-management/order:
+    post:
+      summary: Create Order
+      operationId: createOrder
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/order
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '201':
+          description: Order created
+
+  /api/services-management/orders:
+    get:
+      summary: Get Orders By User
+      operationId: getOrdersByUser
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/orders
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of orders
+
+  /api/services-management/orders/worker:
+    get:
+      summary: Get Orders By Worker
+      operationId: getOrdersByWorker
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/orders/worker
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of worker orders
+
+  /api/services-management/orders/payment:
+    put:
+      summary: Update Order Payment
+      operationId: updateOrderPayment
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/orders/payment
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Payment updated
+
+  # Services
+  /api/services-management:
+    get:
+      summary: List Services
+      operationId: listServices
+      x-google-backend:
+        address: ${services_management_url}/api/services-management
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of services
+
+  /api/services-management/by-category:
+    get:
+      summary: List Services By Category
+      operationId: listServicesByCategory
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/by-category
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of services by category
+
+  /api/services-management/{service_id}/workers:
+    get:
+      summary: Get Workers For Service
+      operationId: getWorkersForService
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/{service_id}/workers
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
+      responses:
+        '200':
+          description: List of workers
+
+  # Payment
+  /api/services-management/payment/pay-order:
+    post:
+      summary: Pay Order Endpoint
+      operationId: payOrder
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/payment/pay-order
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Payment processed
+
+  # Categories
+  /api/services-management/categories:
+    get:
+      summary: Get Categories
+      operationId: getCategories
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/categories
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of categories
+
+  # Media
+  /api/services-management/media/worker/{worker_id}/service/{service_id}:
+    get:
+      summary: Get Worker Media For Service
+      operationId: getWorkerMediaForService
+      parameters:
+        - name: worker_id
+          in: path
+          required: true
+          type: string
+        - name: service_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/media/worker/{worker_id}/service/{service_id}
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
+      responses:
+        '200':
+          description: Worker media
+
+  # Worker management
+  /api/services-management/worker/add-service:
+    patch:
+      summary: Add Service To Worker Endpoint
+      operationId: addServiceToWorker
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/worker/add-service
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Service added to worker
+
+  /api/services-management/worker:
+    patch:
+      summary: Update Worker Info Endpoint
+      operationId: updateWorkerInfo
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/worker
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Worker info updated
+
+  # ===========================================================================
+  # PAYMENTS MICROSERVICE (CLOUD RUN)
+  # ===========================================================================
+  /api/payments/health:
+    get:
+      summary: Health check for Payments service
+      operationId: paymentsHealth
+      x-google-backend:
+        address: ${payments_url}/health
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Service is healthy
+
+  /api/payments:
+    get:
+      summary: List all payments
+      operationId: listPayments
+      x-google-backend:
+        address: ${payments_url}
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: List of payments
+    
+    post:
+      summary: Create a new payment
+      operationId: createPayment
+      x-google-backend:
+        address: ${payments_url}
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+      responses:
+        '201':
+          description: Payment created
+
+  /api/payments/{payment_id}:
+    get:
+      summary: Get payment by ID
+      operationId: getPayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${payments_url}/{payment_id}
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
+      responses:
+        '200':
+          description: Payment details
+        '404':
+          description: Payment not found
+    
+    put:
+      summary: Update payment
+      operationId: updatePayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${payments_url}/{payment_id}
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
+      responses:
+        '200':
+          description: Payment updated
+    
+    delete:
+      summary: Delete payment
+      operationId: deletePayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${payments_url}/{payment_id}
+        protocol: h2
+        jwt_audience: ${payments_url}
+        deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
+      responses:
+        '204':
+          description: Payment deleted
+
+  # ===========================================================================
+  # USERS MICROSERVICE (CLOUD RUN) - Uncomment when ready
+  # ===========================================================================
+  # /api/users/health:
+  #   get:
+  #     summary: Health check for Users service
+  #     operationId: usersHealth
+  #     x-google-backend:
+  #       address: ${users_url}/health
+  #       protocol: h2
+  #       jwt_audience: ${users_url}
+  #       deadline: 30.0
+  #     responses:
+  #       '200':
+  #         description: Service is healthy
+
+  # /api/users:
+  #   get:
+  #     summary: List all users
+  #     operationId: listUsers
+  #     x-google-backend:
+  #       address: ${users_url}
+  #       protocol: h2
+  #       jwt_audience: ${users_url}
+  #       deadline: 30.0
+  #     responses:
+  #       '200':
+  #         description: List of users
+
+  # /api/users/{user_id}:
+  #   get:
+  #     summary: Get user by ID
+  #     operationId: getUser
+  #     parameters:
+  #       - name: user_id
+  #         in: path
+  #         required: true
+  #         type: string
+  #     x-google-backend:
+  #       address: ${users_url}/{user_id}
+  #       protocol: h2
+  #       jwt_audience: ${users_url}
+  #       deadline: 30.0
+  #       path_translation: APPEND_PATH_TO_ADDRESS
+  #     responses:
+  #       '200':
+  #         description: User details
+
+  # ===========================================================================
+  # ORDERS MICROSERVICE (CLOUD RUN) - Uncomment when ready
+  # ===========================================================================
+  # /api/orders:
+  #   get:
+  #     summary: List all orders
+  #     operationId: listOrders
+  #     x-google-backend:
+  #       address: ${orders_url}
+  #       protocol: h2
+  #       jwt_audience: ${orders_url}
+  #       deadline: 30.0
+  #     responses:
+  #       '200':
+  #         description: List of orders
+
+  # /api/orders/{order_id}:
+  #   get:
+  #     summary: Get order by ID
+  #     operationId: getOrder
+  #     parameters:
+  #       - name: order_id
+  #         in: path
+  #         required: true
+  #         type: string
+  #     x-google-backend:
+  #       address: ${orders_url}/{order_id}
+  #       protocol: h2
+  #       jwt_audience: ${orders_url}
+  #       deadline: 30.0
+  #       path_translation: APPEND_PATH_TO_ADDRESS
+  #     responses:
+  #       '200':
+  #         description: Order details
