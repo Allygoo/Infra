@@ -1,0 +1,513 @@
+swagger: '2.0'
+info:
+  title: Allygo Microservices API Gateway
+  description: |
+    Unified API Gateway for Allygo Cloud Run microservices.
+    
+    This API provides access to:
+    - **Services Management**: Order management, service catalog, categories, worker management
+    - **Payments**: Payment processing and management
+    
+    All endpoints are secured and route to Cloud Run services in us-east1.
+  version: 1.0.0
+  contact:
+    name: Allygo Team
+    email: support@allygo.com
+
+host: allygo-api-gateway-8xcnswdr.ue.gateway.dev
+schemes:
+  - https
+
+tags:
+  - name: Services Management
+    description: Order management, service catalog, categories, and worker operations
+  - name: Payments
+    description: Payment processing and management
+  - name: Health
+    description: Health check endpoints
+
+paths:
+  # ===========================================================================
+  # SERVICES MANAGEMENT MICROSERVICE
+  # ===========================================================================
+  
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check for Services Management
+      description: Verifies that the Services Management microservice is running and healthy
+      operationId: servicesManagementHealth
+      responses:
+        '200':
+          description: Service is healthy
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "healthy"
+
+  /api/services-management/order:
+    post:
+      tags:
+        - Services Management
+      summary: Create Order
+      description: Creates a new service order
+      operationId: createOrder
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+              serviceId:
+                type: string
+              workerId:
+                type: string
+              details:
+                type: object
+      responses:
+        '201':
+          description: Order created successfully
+          schema:
+            type: object
+            properties:
+              orderId:
+                type: string
+              status:
+                type: string
+
+  /api/services-management/orders:
+    get:
+      tags:
+        - Services Management
+      summary: Get Orders By User
+      description: Retrieves all orders for a specific user
+      operationId: getOrdersByUser
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          type: string
+          description: User ID to filter orders
+      responses:
+        '200':
+          description: List of user orders
+          schema:
+            type: array
+            items:
+              type: object
+
+  /api/services-management/orders/worker:
+    get:
+      tags:
+        - Services Management
+      summary: Get Orders By Worker
+      description: Retrieves all orders assigned to a specific worker
+      operationId: getOrdersByWorker
+      parameters:
+        - name: workerId
+          in: query
+          required: true
+          type: string
+          description: Worker ID to filter orders
+      responses:
+        '200':
+          description: List of worker orders
+          schema:
+            type: array
+            items:
+              type: object
+
+  /api/services-management/orders/payment:
+    put:
+      tags:
+        - Services Management
+      summary: Update Order Payment
+      description: Updates the payment status of an order
+      operationId: updateOrderPayment
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              orderId:
+                type: string
+              paymentId:
+                type: string
+              status:
+                type: string
+      responses:
+        '200':
+          description: Payment updated successfully
+
+  /api/services-management:
+    get:
+      tags:
+        - Services Management
+      summary: List Services
+      description: Retrieves the complete catalog of available services
+      operationId: listServices
+      responses:
+        '200':
+          description: List of all services
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                serviceId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                categoryId:
+                  type: string
+                price:
+                  type: number
+
+  /api/services-management/by-category:
+    get:
+      tags:
+        - Services Management
+      summary: List Services By Category
+      description: Retrieves services filtered by category
+      operationId: listServicesByCategory
+      parameters:
+        - name: categoryId
+          in: query
+          required: true
+          type: string
+          description: Category ID to filter services
+      responses:
+        '200':
+          description: List of services in the category
+          schema:
+            type: array
+            items:
+              type: object
+
+  /api/services-management/{service_id}/workers:
+    get:
+      tags:
+        - Services Management
+      summary: Get Workers For Service
+      description: Retrieves all workers available for a specific service
+      operationId: getWorkersForService
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          type: string
+          description: Service ID
+      responses:
+        '200':
+          description: List of workers for the service
+          schema:
+            type: array
+            items:
+              type: object
+
+  /api/services-management/payment/pay-order:
+    post:
+      tags:
+        - Services Management
+      summary: Pay Order Endpoint
+      description: Processes payment for an order
+      operationId: payOrder
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              orderId:
+                type: string
+              paymentMethod:
+                type: string
+              amount:
+                type: number
+      responses:
+        '200':
+          description: Payment processed successfully
+          schema:
+            type: object
+            properties:
+              paymentId:
+                type: string
+              status:
+                type: string
+
+  /api/services-management/categories:
+    get:
+      tags:
+        - Services Management
+      summary: Get Categories
+      description: Retrieves all service categories
+      operationId: getCategories
+      responses:
+        '200':
+          description: List of categories
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+
+  /api/services-management/media/worker/{worker_id}/service/{service_id}:
+    get:
+      tags:
+        - Services Management
+      summary: Get Worker Media For Service
+      description: Retrieves media (photos, videos) of a worker's work for a specific service
+      operationId: getWorkerMediaForService
+      parameters:
+        - name: worker_id
+          in: path
+          required: true
+          type: string
+          description: Worker ID
+        - name: service_id
+          in: path
+          required: true
+          type: string
+          description: Service ID
+      responses:
+        '200':
+          description: Worker media for the service
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                mediaId:
+                  type: string
+                url:
+                  type: string
+                type:
+                  type: string
+                  enum: [photo, video]
+
+  /api/services-management/worker/add-service:
+    patch:
+      tags:
+        - Services Management
+      summary: Add Service To Worker
+      description: Adds a new service to a worker's available services
+      operationId: addServiceToWorker
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              workerId:
+                type: string
+              serviceId:
+                type: string
+      responses:
+        '200':
+          description: Service added to worker successfully
+
+  /api/services-management/worker:
+    patch:
+      tags:
+        - Services Management
+      summary: Update Worker Info
+      description: Updates worker profile information
+      operationId: updateWorkerInfo
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              workerId:
+                type: string
+              name:
+                type: string
+              phone:
+                type: string
+              email:
+                type: string
+      responses:
+        '200':
+          description: Worker info updated successfully
+
+  # ===========================================================================
+  # PAYMENTS MICROSERVICE
+  # ===========================================================================
+  
+  /api/payments/health:
+    get:
+      tags:
+        - Health
+      summary: Health check for Payments service
+      description: Verifies that the Payments microservice is running and healthy
+      operationId: paymentsHealth
+      responses:
+        '200':
+          description: Service is healthy
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "healthy"
+
+  /api/payments:
+    get:
+      tags:
+        - Payments
+      summary: List all payments
+      description: Retrieves all payment records
+      operationId: listPayments
+      parameters:
+        - name: limit
+          in: query
+          type: integer
+          description: Maximum number of payments to return
+        - name: offset
+          in: query
+          type: integer
+          description: Offset for pagination
+      responses:
+        '200':
+          description: List of payments
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                paymentId:
+                  type: string
+                orderId:
+                  type: string
+                amount:
+                  type: number
+                status:
+                  type: string
+                createdAt:
+                  type: string
+                  format: date-time
+    
+    post:
+      tags:
+        - Payments
+      summary: Create a new payment
+      description: Creates a new payment record
+      operationId: createPayment
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              orderId:
+                type: string
+              amount:
+                type: number
+              paymentMethod:
+                type: string
+      responses:
+        '201':
+          description: Payment created successfully
+          schema:
+            type: object
+            properties:
+              paymentId:
+                type: string
+              status:
+                type: string
+
+  /api/payments/{payment_id}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment by ID
+      description: Retrieves detailed information about a specific payment
+      operationId: getPayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+          description: Payment ID
+      responses:
+        '200':
+          description: Payment details
+          schema:
+            type: object
+            properties:
+              paymentId:
+                type: string
+              orderId:
+                type: string
+              amount:
+                type: number
+              status:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+        '404':
+          description: Payment not found
+    
+    put:
+      tags:
+        - Payments
+      summary: Update payment
+      description: Updates an existing payment record
+      operationId: updatePayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+          description: Payment ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              amount:
+                type: number
+      responses:
+        '200':
+          description: Payment updated successfully
+    
+    delete:
+      tags:
+        - Payments
+      summary: Delete payment
+      description: Deletes a payment record
+      operationId: deletePayment
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          type: string
+          description: Payment ID
+      responses:
+        '204':
+          description: Payment deleted successfully
