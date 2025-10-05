@@ -159,7 +159,6 @@ paths:
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
-        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: List of workers
@@ -179,12 +178,12 @@ paths:
           description: Payment processed
 
   # Categories
-  /api/services-management/categories:
+  /api/services-management/categories/all:
     get:
       summary: Get Categories
       operationId: getCategories
       x-google-backend:
-        address: ${services_management_url}/api/services-management/categories
+        address: ${services_management_url}/api/services-management/categories/all
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
@@ -229,7 +228,6 @@ paths:
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
-        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: Worker media
