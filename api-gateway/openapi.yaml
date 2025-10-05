@@ -114,6 +114,24 @@ paths:
         '200':
           description: List of services
 
+  /api/services-management/{service_id}:
+    get:
+      summary: Get Service By ID
+      operationId: getServiceById
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/{service_id}
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Service details
+
   /api/services-management/by-category:
     get:
       summary: List Services By Category
@@ -173,6 +191,24 @@ paths:
       responses:
         '200':
           description: List of categories
+
+  /api/services-management/categories/{category_id}:
+    get:
+      summary: Get Category By ID
+      operationId: getCategoryById
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          type: string
+      x-google-backend:
+        address: ${services_management_url}/api/services-management/categories/{category_id}
+        protocol: h2
+        jwt_audience: ${services_management_url}
+        deadline: 30.0
+      responses:
+        '200':
+          description: Category details
 
   # Media
   /api/services-management/media/worker/{worker_id}/service/{service_id}:
