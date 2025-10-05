@@ -1,7 +1,7 @@
 # =============================================================================
 # API GATEWAY - OPENAPI SPECIFICATION FOR CLOUD RUN
 # =============================================================================
-# This file defines the API routes and backend integrations for GCP API Gateway
+# This file defines the API routes and backend integeregrations for GCP API Gateway
 # Optimized for Cloud Run services with proper authentication
 
 swagger: '2.0'
@@ -26,7 +26,7 @@ schemes:
 #   - api_key: []
 
 # =============================================================================
-# PATHS - API ENDPOINTS
+# PATHS - API ENDPOintegerS
 # =============================================================================
 paths:
   # ===========================================================================
@@ -122,7 +122,7 @@ paths:
         - name: service_id
           in: path
           required: true
-          type: int
+          type: integer
       x-google-backend:
         address: ${services_management_url}/api/services-management/{service_id}
         protocol: h2
@@ -153,7 +153,7 @@ paths:
         - name: service_id
           in: path
           required: true
-          type: int
+          type: integer
       x-google-backend:
         address: ${services_management_url}/api/services-management/{service_id}/workers
         protocol: h2
@@ -166,7 +166,7 @@ paths:
   # Payment
   /api/services-management/payment/pay-order:
     post:
-      summary: Pay Order Endpoint
+      summary: Pay Order Endpointeger
       operationId: payOrder
       x-google-backend:
         address: ${services_management_url}/api/services-management/payment/pay-order
@@ -199,7 +199,7 @@ paths:
         - name: category_id
           in: path
           required: true
-          type: int
+          type: integer
       x-google-backend:
         address: ${services_management_url}/api/services-management/categories/{category_id}
         protocol: h2
@@ -218,11 +218,11 @@ paths:
         - name: worker_id
           in: path
           required: true
-          type: int
+          type: integer
         - name: service_id
           in: path
           required: true
-          type: int
+          type: integer
       x-google-backend:
         address: ${services_management_url}/api/services-management/media/worker/{worker_id}/service/{service_id}
         protocol: h2
@@ -235,7 +235,7 @@ paths:
   # Worker management
   /api/services-management/worker/add-service:
     patch:
-      summary: Add Service To Worker Endpoint
+      summary: Add Service To Worker Endpointeger
       operationId: addServiceToWorker
       x-google-backend:
         address: ${services_management_url}/api/services-management/worker/add-service
@@ -248,7 +248,7 @@ paths:
 
   /api/services-management/worker:
     patch:
-      summary: Update Worker Info Endpoint
+      summary: Update Worker Info Endpointeger
       operationId: updateWorkerInfo
       x-google-backend:
         address: ${services_management_url}/api/services-management/worker

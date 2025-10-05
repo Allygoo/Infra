@@ -236,7 +236,7 @@ resource "google_compute_global_forwarding_rule" "api_gateway_https_forwarding_r
   target                = google_compute_target_https_proxy.api_gateway_https_proxy[0].id
   port_range            = "443"
   ip_protocol           = "TCP"
-  load_balancing_scheme = "EXTERNAL_MANAGED"
+  load_balancing_scheme = "EXTERNAL"
   ip_address            = google_compute_global_address.api_gateway_ip.address
 }
 
@@ -247,7 +247,7 @@ resource "google_compute_global_forwarding_rule" "api_gateway_http_forwarding_ru
   target                = google_compute_target_http_proxy.api_gateway_http_proxy[0].id
   port_range            = "80"
   ip_protocol           = "TCP"
-  load_balancing_scheme = "EXTERNAL_MANAGED"
+  load_balancing_scheme = "EXTERNAL"
   ip_address            = google_compute_global_address.api_gateway_ip.address
 }
 
