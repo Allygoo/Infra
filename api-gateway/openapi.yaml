@@ -155,7 +155,7 @@ paths:
           required: true
           type: int
       x-google-backend:
-        address: https://services-ms-699512703471.us-east1.run.app/api/services-management/{service_id}/workers
+        address: ${services_management_url}/api/services-management/{service_id}/workers
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
