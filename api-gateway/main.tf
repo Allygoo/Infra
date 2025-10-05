@@ -143,3 +143,161 @@ resource "google_api_gateway_gateway" "gateway" {
 
   depends_on = [google_api_gateway_api_config.api_config]
 }
+
+# =============================================================================
+# LOAD BALANCER CONFIGURATION (SERVERLESS NEG)
+# =============================================================================
+
+# Serverless Network Endpoint Group (NEG) for API Gateway
+resource "google_compute_region_network_endpoint_group" "api_gateway_neg" {
+  provider              = google-beta
+  name                  = "${var.api_gateway_name}-serverless-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+
+  serverless_deployment {
+    platform = "apigateway.googleapis.com"
+    resource = google_api_gateway_gateway.gateway.gateway_id
+  }
+
+  depends_on = [google_api_gateway_gateway.gateway]
+}
+
+# Backend Service - defines how the load balancer distributes traffic
+resource "google_compute_backend_service" "api_gateway_backend" {
+  name        = "${var.api_gateway_name}-backend-service"
+  protocol    = "HTTPS"
+  timeout_sec = 30
+
+  # Enable Cloud CDN if desired (optional)
+  enable_cdn = var.enable_cdn
+
+  backend {
+    group = google_compute_region_network_endpoint_group.api_gateway_neg.id
+  }
+
+  log_config {
+    enable      = true
+    sample_rate = 1.0
+  }
+}
+
+# URL Map - routes incoming requests to the backend service
+resource "google_compute_url_map" "api_gateway_url_map" {
+  name            = "${var.api_gateway_name}-url-map"
+  default_service = google_compute_backend_service.api_gateway_backend.id
+
+  # Optional: Add host rules and path matchers for multiple backends
+  # host_rule {
+  #   hosts        = [var.custom_domain]
+  #   path_matcher = "api-gateway-path-matcher"
+  # }
+  #
+  # path_matcher {
+  #   name            = "api-gateway-path-matcher"
+  #   default_service = google_compute_backend_service.api_gateway_backend.id
+  # }
+}
+
+# SSL Certificate - managed by Google (requires domain ownership)
+resource "google_compute_managed_ssl_certificate" "api_gateway_cert" {
+  count = var.custom_domain != "" ? 1 : 0
+  name  = "${var.api_gateway_name}-ssl-cert"
+
+  managed {
+    domains = [var.custom_domain]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# HTTPS Target Proxy - routes requests to the URL map
+resource "google_compute_target_https_proxy" "api_gateway_https_proxy" {
+  count   = var.custom_domain != "" ? 1 : 0
+  name    = "${var.api_gateway_name}-https-proxy"
+  url_map = google_compute_url_map.api_gateway_url_map.id
+
+  ssl_certificates = [google_compute_managed_ssl_certificate.api_gateway_cert[0].id]
+}
+
+# HTTP Target Proxy - for testing without SSL (optional)
+resource "google_compute_target_http_proxy" "api_gateway_http_proxy" {
+  count   = var.enable_http_proxy ? 1 : 0
+  name    = "${var.api_gateway_name}-http-proxy"
+  url_map = google_compute_url_map.api_gateway_url_map.id
+}
+
+# Global Forwarding Rule - HTTPS (443)
+resource "google_compute_global_forwarding_rule" "api_gateway_https_forwarding_rule" {
+  count                 = var.custom_domain != "" ? 1 : 0
+  name                  = "${var.api_gateway_name}-https-forwarding-rule"
+  target                = google_compute_target_https_proxy.api_gateway_https_proxy[0].id
+  port_range            = "443"
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  ip_address            = google_compute_global_address.api_gateway_ip.address
+}
+
+# Global Forwarding Rule - HTTP (80) - redirects to HTTPS
+resource "google_compute_global_forwarding_rule" "api_gateway_http_forwarding_rule" {
+  count                 = var.enable_http_proxy ? 1 : 0
+  name                  = "${var.api_gateway_name}-http-forwarding-rule"
+  target                = google_compute_target_http_proxy.api_gateway_http_proxy[0].id
+  port_range            = "80"
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  ip_address            = google_compute_global_address.api_gateway_ip.address
+}
+
+# =============================================================================
+# CLOUD ARMOR SECURITY POLICY (OPTIONAL)
+# =============================================================================
+
+# Uncomment to enable Cloud Armor protection
+# resource "google_compute_security_policy" "api_gateway_security_policy" {
+#   name = "${var.api_gateway_name}-security-policy"
+#
+#   # Block common web attacks
+#   rule {
+#     action   = "deny(403)"
+#     priority = "1000"
+#     match {
+#       expr {
+#         expression = "evaluatePreconfiguredExpr('sqli-stable')"
+#       }
+#     }
+#     description = "Block SQL injection attacks"
+#   }
+#
+#   rule {
+#     action   = "deny(403)"
+#     priority = "1001"
+#     match {
+#       expr {
+#         expression = "evaluatePreconfiguredExpr('xss-stable')"
+#       }
+#     }
+#     description = "Block XSS attacks"
+#   }
+#
+#   # Allow all other traffic
+#   rule {
+#     action   = "allow"
+#     priority = "2147483647"
+#     match {
+#       versioned_expr = "SRC_IPS_V1"
+#       config {
+#         src_ip_ranges = ["*"]
+#       }
+#     }
+#     description = "Default allow rule"
+#   }
+# }
+#
+# # Attach security policy to backend service
+# resource "google_compute_backend_service_iam_member" "security_policy_attachment" {
+#   backend_service = google_compute_backend_service.api_gateway_backend.name
+#   security_policy = google_compute_security_policy.api_gateway_security_policy.id
+# }

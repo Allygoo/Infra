@@ -54,3 +54,31 @@ variable "allowed_origins" {
   type        = list(string)
   default     = ["*"]
 }
+
+# =============================================================================
+# LOAD BALANCER VARIABLES
+# =============================================================================
+
+variable "custom_domain" {
+  description = "Custom domain for API Gateway (e.g., api.allygo.com). Leave empty to use default API Gateway URL"
+  type        = string
+  default     = ""
+}
+
+variable "enable_cdn" {
+  description = "Enable Cloud CDN for the API Gateway backend"
+  type        = bool
+  default     = false
+}
+
+variable "enable_http_proxy" {
+  description = "Enable HTTP (port 80) proxy for testing. Traffic will be redirected to HTTPS in production"
+  type        = bool
+  default     = false
+}
+
+variable "enable_cloud_armor" {
+  description = "Enable Cloud Armor security policy for DDoS and WAF protection"
+  type        = bool
+  default     = false
+}

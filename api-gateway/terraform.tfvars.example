@@ -27,3 +27,23 @@ payments_service_url = "https://payments-ms-xxxxx-ue.a.run.app"
 # CORS Configuration
 enable_cors     = true
 allowed_origins = ["*"]  # Change to your frontend domain in production
+
+# =============================================================================
+# LOAD BALANCER CONFIGURATION (OPTIONAL)
+# =============================================================================
+
+# Custom Domain - Leave empty to skip Load Balancer setup
+# If you set this, you MUST configure DNS A record pointing to the Load Balancer IP
+# Example: "api.allygo.com"
+custom_domain = ""
+
+# Enable Cloud CDN for global caching (reduces latency and costs)
+enable_cdn = false
+
+# Enable HTTP proxy on port 80 (for testing or HTTP-to-HTTPS redirect)
+# Recommended: false for production (use HTTPS only)
+enable_http_proxy = false
+
+# Enable Cloud Armor for DDoS and WAF protection
+# Note: Requires additional configuration in main.tf (see comments)
+enable_cloud_armor = false
