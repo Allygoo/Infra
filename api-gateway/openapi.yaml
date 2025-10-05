@@ -122,7 +122,7 @@ paths:
         - name: service_id
           in: path
           required: true
-          type: string
+          type: int
       x-google-backend:
         address: ${services_management_url}/api/services-management/{service_id}
         protocol: h2
@@ -153,9 +153,9 @@ paths:
         - name: service_id
           in: path
           required: true
-          type: string
+          type: int
       x-google-backend:
-        address: ${services_management_url}/api/services-management/{service_id}/workers
+        address: https://services-ms-699512703471.us-east1.run.app/api/services-management/{service_id}/workers
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
@@ -199,7 +199,7 @@ paths:
         - name: category_id
           in: path
           required: true
-          type: string
+          type: int
       x-google-backend:
         address: ${services_management_url}/api/services-management/categories/{category_id}
         protocol: h2
@@ -218,11 +218,11 @@ paths:
         - name: worker_id
           in: path
           required: true
-          type: string
+          type: int
         - name: service_id
           in: path
           required: true
-          type: string
+          type: int
       x-google-backend:
         address: ${services_management_url}/api/services-management/media/worker/{worker_id}/service/{service_id}
         protocol: h2
