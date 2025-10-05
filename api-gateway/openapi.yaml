@@ -124,10 +124,11 @@ paths:
           required: true
           type: integer
       x-google-backend:
-        address: ${services_management_url}/api/services-management/{service_id}
+        address: ${services_management_url}
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: Service details
@@ -155,10 +156,11 @@ paths:
           required: true
           type: integer
       x-google-backend:
-        address: ${services_management_url}/api/services-management/{service_id}/workers
+        address: ${services_management_url}
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: List of workers
@@ -201,10 +203,11 @@ paths:
           required: true
           type: integer
       x-google-backend:
-        address: ${services_management_url}/api/services-management/categories/{category_id}
+        address: ${services_management_url}
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: Category details
@@ -224,10 +227,11 @@ paths:
           required: true
           type: integer
       x-google-backend:
-        address: ${services_management_url}/api/services-management/media/worker/{worker_id}/service/{service_id}
+        address: ${services_management_url}
         protocol: h2
         jwt_audience: ${services_management_url}
         deadline: 30.0
+        path_translation: APPEND_PATH_TO_ADDRESS
       responses:
         '200':
           description: Worker media
@@ -235,8 +239,25 @@ paths:
   # Worker management
   /api/services-management/worker/add-service:
     patch:
-      summary: Add Service To Worker Endpointeger
+      summary: Add Service To Worker Endpoint
       operationId: addServiceToWorker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_service:
+                  type: integer
+                id_worker:
+                  type: integer
+                service_price:
+                  type: number      
+              required:
+                - id_service
+                - id_worker
+                - service_price
       x-google-backend:
         address: ${services_management_url}/api/services-management/worker/add-service
         protocol: h2
@@ -245,6 +266,7 @@ paths:
       responses:
         '200':
           description: Service added to worker
+
 
   /api/services-management/worker:
     patch:
